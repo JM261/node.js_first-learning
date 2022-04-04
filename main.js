@@ -11,7 +11,7 @@ var app = http.createServer(function(request,response){
     if(pathname === '/'){
       if(queryData.id === undefined){
         var title = 'Welcome';
-        var description = 'Hello Node.js';
+        var description = 'Hello Nodejs';
         fs.readFile(`data/${queryData.id}`, 'utf-8', function(err, description){
           var template = `
           <!doctype html>
