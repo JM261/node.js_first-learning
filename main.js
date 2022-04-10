@@ -1,6 +1,7 @@
 var http = require('http');
 var fs = require('fs');
 var url = require('url');
+var qs = require('querystring');
 
 function templateHTML(title, list, body){
   return `
@@ -13,6 +14,7 @@ function templateHTML(title, list, body){
   <body>
     <h1><a href="/">WEB</a></h1>
     ${list}
+    <a href="/create">create</a>
     ${body}
   </body>
   </html>
@@ -58,6 +60,36 @@ var app = http.createServer(function(request,response){
           });
         });
       }
+    } else if(pathname === '/create'){
+      fs.readdir('./data', function(error, fileList){
+        var title = 'WEB - create';
+        var list = templateList(fileList);
+        var template = templateHTML(title, list, `
+          <form action="http://localhost:3000/create_process" method="post">
+              <p><input text="text" placeholder="title"></p>
+              <p>
+                  <textarea placeholder="description"></textarea>
+              </p>
+              <p>
+                  <input type="submit">
+              </p>
+          </form>
+        `);
+        response.writeHead(200);
+        response.end(template);
+      });
+    } else if (pathname === '/create_process') {
+      var body ='';
+      request.on('data', function(data){
+          body = body + data;
+      });
+      request.on('end', function(){
+          var post = qs.parse(body);
+          var tilte = post.title;
+          var description = post.description;
+      });
+      response.writeHead(200);
+      response.end('success');
     } else {
       response.writeHead(404);
       response.end('Not found');
